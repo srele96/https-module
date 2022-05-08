@@ -1,0 +1,30 @@
+{
+  "name": "https-module",
+  "version": "0.1.0",
+  "description": "Server-Side Rendering with https module and react.",
+  "keywords": [
+    "react",
+    "https",
+    "server-side",
+    "rendering",
+    "client-side",
+    "spa",
+    "nodejs"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "start": "nodemon server.js",
+    "webpack": "webpack --watch"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16",
+    "prettier": "^2.6.2",
+    "webpack-dev-server": "^4.9.0",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
+  }
+}

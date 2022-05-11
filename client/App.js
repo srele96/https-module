@@ -15,11 +15,25 @@ const fetchReactPackages = () =>
 
 const isServer = () => typeof window === 'undefined';
 
-function getInitialState(key) {
+function getInitialState(key, defaultValue) {
   if (isServer()) {
+    // server-side data is always fresh because it is fetched with every request
     return globalThis.__INITIAL_STATE__[key];
   } else {
-    return window.__INITIAL_STATE__[key];
+    // use fresh state after ssr
+    // if the component remounts after the ssr, the state is not fresh anymore
+    // loading is false after server fetches the data, but
+    // if the component remounts the loading should be true
+    // window['loading'] will be false on every subsequent remount and client
+    // will never re-fetch the data
+    if (typeof window.__INITIAL_STATE__[key] !== 'undefined') {
+      const state = window.__INITIAL_STATE__[key];
+      // purge the initial state after using it to avoid stale initial data
+      window.__INITIAL_STATE__[key] = undefined;
+      return state;
+    } else {
+      return defaultValue;
+    }
   }
 }
 

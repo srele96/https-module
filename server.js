@@ -5,34 +5,39 @@ const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 const App = require('./client/App');
 
-async function getHTML() {
-  let html = readFileSync(join(__dirname, 'public', 'index.html'), {
-    encoding: 'utf8',
+function getHTML() {
+  return new Promise((resolve) => {
+    let html = readFileSync(join(__dirname, 'public', 'index.html'), {
+      encoding: 'utf8',
+    });
+
+    let __INITIAL_STATE__ = null;
+
+    App.fetchReactPackages()
+      .then((data) => {
+        __INITIAL_STATE__ = { loading: false, error: null, data };
+      })
+      .catch((error) => {
+        __INITIAL_STATE__ = { loading: false, data: null, error };
+      })
+      .finally(() => {
+        // initial state for SSR, must be initialized before rendering the app
+        globalThis.__INITIAL_STATE__ = __INITIAL_STATE__;
+
+        html = html.replace(
+          '<div id="root"></div>',
+          `<div id='root'>${renderToString(createElement(App))}</div>`
+        );
+
+        // initial state for csr
+        html += `<script>window.__INITIAL_STATE__ = ${JSON.stringify(
+          __INITIAL_STATE__
+        )}</script>`;
+
+        resolve(html);
+      });
   });
-
-  let initialState = { loading: false };
-
-  try {
-    const data = await App.fetchReactPackages();
-    initialState = { ...initialState, data, error: null };
-  } catch (error) {
-    initialState = { ...initialState, error, data: null };
-  }
-
-  globalThis.__INITIAL_STATE__ = initialState;
-
-  html = html.replace(
-    '<div id="root"></div>',
-    `<div id='root'>${renderToString(createElement(App))}</div>`
-  );
-
-  html += `<script>window.__INITIAL_STATE__ = ${JSON.stringify(
-    initialState
-  )}</script>`;
-
-  return html;
 }
-
 // https://nodejs.org/api/https.html#httpscreateserveroptions-requestlistener
 https
   .createServer(

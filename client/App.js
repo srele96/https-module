@@ -12,7 +12,9 @@ const fetchReactPackages = () =>
       .catch((error) => reject(error.message));
   });
 
-function App() {}
+function App() {
+  return e('h1', null, 'React SSR - Data Fetching');
+}
 
 /**
  * Should return an object with the following shape:

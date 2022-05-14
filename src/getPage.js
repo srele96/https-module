@@ -4,6 +4,10 @@ const { readFileSync } = require('fs');
 const { join } = require('path');
 const resolveState = require('./resolveState');
 
+/**
+ * Resolves the page state, exposes the state for
+ * the ssr and csr and returns the page html.
+ */
 function getPage(Component) {
   // getPageState shouldn't be required
   // when the page doesn't use it the page state is empty

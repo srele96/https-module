@@ -17,7 +17,10 @@ function App() {
 }
 
 /**
- * Should return an object with the following shape:
+ * Provides the ability of declarative data fetching.
+ *
+ * If the page component has the getPageState function that returns
+ * required structured data, then the data fetching is done automatically.
  *
  * @example
  * {

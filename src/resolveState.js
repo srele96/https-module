@@ -1,3 +1,8 @@
+/**
+ * Goes through the state and resolves component state thenables.
+ *
+ * Resolves after all thenables map their data to the resolved state.
+ */
 function resolveState(pageState) {
   let resolvedState = {};
   let stateResolvers = [];

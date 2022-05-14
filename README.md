@@ -1,4 +1,4 @@
-# https-module & react
+# https-module-react-ssr
 
 Server-Side Rendering with https module and react.
 

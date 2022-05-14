@@ -28,7 +28,7 @@ function getPage(Component) {
         return initialState;
       })
       .then((initialState) => {
-        let html = readFileSync(join(__dirname, 'public', 'index.html'), {
+        let html = readFileSync(join(process.cwd(), 'public', 'index.html'), {
           encoding: 'utf8',
         });
 

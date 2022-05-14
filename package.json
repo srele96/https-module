@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "format": "prettier --write .",
-    "server": "nodemon server.js",
+    "server": "nodemon src/server.js",
     "webpack": "webpack --watch",
     "start": "npm-run-all --parallel server webpack",
     "test": "jest --watchAll"

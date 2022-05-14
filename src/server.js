@@ -2,7 +2,7 @@ const https = require('https');
 const readFileSync = require('fs').readFileSync;
 const join = require('path').join;
 const { createElement: e } = require('react');
-const App = require('./client/App');
+const App = require('./App');
 const getPage = require('./getPage');
 
 // https://nodejs.org/api/https.html#httpscreateserveroptions-requestlistener
@@ -21,7 +21,7 @@ https
         getPage(App).then((html) => res.end(html));
       } else if (req.url === '/bundle.js') {
         res.writeHead(200, { 'Content-Type': 'application/javascript' });
-        const js = readFileSync(join(__dirname, 'build', 'bundle.js'), {
+        const js = readFileSync(join(process.cwd(), 'build', 'bundle.js'), {
           encoding: 'utf8',
         });
         res.end(js);

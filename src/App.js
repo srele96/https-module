@@ -1,5 +1,5 @@
+const { createElement: e, useState, useEffect } = require('react');
 const axios = require('axios');
-const { createElement: e } = require('react');
 
 const fetchReactPackages = () =>
   new Promise((resolve, reject) => {
@@ -8,12 +8,62 @@ const fetchReactPackages = () =>
       url: 'https://api.npms.io/v2/search?q=react&size=3',
       responseType: 'json',
     })
-      .then((response) => resolve(response.data.results))
-      .catch((error) => reject(error.message));
+      .then(({ data }) => {
+        resolve(data.results);
+      })
+      .catch(({ message }) => {
+        reject(message);
+      });
   });
 
+function getServerSideState(component) {
+  /** @typedef {any} __INITIAL_STATE__ shut up the ide */
+  const state = __INITIAL_STATE__[component];
+  // purge the initial data to use the fresh one after the client takes over
+  __INITIAL_STATE__['App'] = undefined;
+
+  return state;
+}
+
 function App() {
-  return e('h1', null, 'React SSR - Data Fetching');
+  const state = getServerSideState('App');
+  const [loading, setLoading] = useState(state?.packages?.loading ?? true);
+  const [data, setData] = useState(state?.packages?.data ?? null);
+  const [error, setError] = useState(state?.packages?.error ?? null);
+
+  useEffect(() => {
+    if (loading) {
+      fetchReactPackages()
+        .then((results) => {
+          setData(results);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setError(error);
+          setLoading(false);
+        });
+    }
+  }, [loading, setData, setLoading, setError]);
+
+  if (loading) return e('h1', 'Loading...');
+  if (error) return e('h1', error);
+
+  return e(
+    'article',
+    {},
+    e('h1', {}, 'React Packages'),
+    e('p', {}, 'The 3 react packages from npms api'),
+    data.map(({ package }) => {
+      const { name, description, version } = package;
+      return e(
+        'section',
+        { key: `${name}:${version}` },
+        e('h2', {}, name),
+        e('p', {}, description),
+        e('p', {}, `Version: ${version}`)
+      );
+    })
+  );
 }
 
 /**
@@ -36,17 +86,7 @@ function App() {
 App.getPageState = function getPageState() {
   return {
     App: {
-      data: fetchReactPackages(),
-    },
-    Test: {
-      test: new Promise((resolve) => {
-        setTimeout(() => resolve('Hello'), 1000);
-      }),
-    },
-    Rejected: {
-      rejected: new Promise((resolve, reject) => {
-        setTimeout(() => reject('Hello'), 1000);
-      }),
+      packages: fetchReactPackages(),
     },
   };
 };

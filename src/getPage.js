@@ -2,6 +2,7 @@ const { createElement: e } = require('react');
 const { renderToString } = require('react-dom/server');
 const { readFileSync } = require('fs');
 const { join } = require('path');
+const { cloneDeep } = require('lodash');
 const resolveState = require('./resolveState');
 
 /**
@@ -27,7 +28,16 @@ function getPage(Component) {
       // CLIENT AND SERVER
       .then(function (initialState) {
         // set initial state for ssr
-        this['__INITIAL_STATE__'] = initialState;
+        // Separate the references from server-side and client-side state
+        // When initial state is deleted on the server it will not be deleted
+        // on the client.
+        // After the component takes the initial state that belongs to it
+        // that initial state should be purged from initial state to use the
+        // fresh initial state afterwards.
+        // The state from the server is always fresh.
+        // However, whenever the client-side component is mounted, the data
+        // must be refreshed.
+        this['__INITIAL_STATE__'] = cloneDeep(initialState);
         // return initial state for csr
         return initialState;
       })

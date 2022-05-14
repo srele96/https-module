@@ -45,8 +45,8 @@ function App() {
     }
   }, [loading, setData, setLoading, setError]);
 
-  if (loading) return e('h1', 'Loading...');
-  if (error) return e('h1', error);
+  if (loading) return e('h1', {}, 'Loading...');
+  if (error) return e('h1', {}, error);
 
   return e(
     'article',

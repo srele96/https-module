@@ -1,5 +1,5 @@
 {
-  "name": "https-module",
+  "name": "https-module-react-ssr",
   "version": "0.1.0",
   "description": "Server-Side Rendering with https module and react.",
   "private": true,

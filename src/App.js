@@ -1,4 +1,5 @@
 const { createElement: e, useState, useEffect } = require('react');
+const { cloneDeep } = require('lodash');
 const axios = require('axios');
 
 const fetchReactPackages = () =>
@@ -16,11 +17,17 @@ const fetchReactPackages = () =>
       });
   });
 
+/**
+ * Returns the deep clone of the component state and
+ * purges the taken state from the global object.
+ */
 function getServerSideState(component) {
   /** @typedef {any} __INITIAL_STATE__ shut up the ide */
-  const state = __INITIAL_STATE__[component];
+  // dereference the sliced state because when purging global state
+  // if objects keep references to the same object both will be purged
+  const state = cloneDeep(__INITIAL_STATE__[component]);
   // purge the initial data to use the fresh one after the client takes over
-  __INITIAL_STATE__['App'] = undefined;
+  __INITIAL_STATE__[component] = undefined;
 
   return state;
 }

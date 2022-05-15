@@ -33,8 +33,6 @@ it('returns the correct html', () => {
   });
 });
 
-/** @typedef {any} __INITIAL_STATE__ shut up the intellisense */
-
 it(
   'sets the correct initial state for ssr ' +
     'and csr when the state is empty object',

@@ -22,10 +22,9 @@ const fetchReactPackages = () =>
  * purges the taken state from the global object.
  */
 function getServerSideState(component) {
-  /** @typedef {any} __INITIAL_STATE__ shut up the ide */
   // dereference the sliced state because when purging global state
   // if objects keep references to the same object both will be purged
-  const state = cloneDeep(globalThis.__INITIAL_STATE__[component]);
+  const state = cloneDeep(globalThis['__INITIAL_STATE__'][component]);
   // purge the initial data to use the fresh one after the client takes over
   globalThis.__INITIAL_STATE__[component] = undefined;
 

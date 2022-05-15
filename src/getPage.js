@@ -18,15 +18,8 @@ function getPage(Component) {
     // even if the function getPageState exists, it may not return anything
     // use default state
     resolveState(pageState ?? {})
-      .then((initialStates) =>
-        initialStates.length === 0 ? {} : initialStates[0].value
-      )
-      // WARNING!!!
-      // DO NOT USE ARROW FUNCTION BECAUSE THEY WILL BIND THIS
-      // TO THE FUNCTION AND IT WILL NOT REFERENCE GLOBAL OBJECT
-      // THIS SHOULD UNIVERSALLY REFERENCE GLOBAL OBJECT ON THE
-      // CLIENT AND SERVER
-      .then(function (initialState) {
+      .then((states) => (states.length === 0 ? {} : states[0].value))
+      .then((state) => {
         // set initial state for ssr
         // Separate the references from server-side and client-side state
         // When initial state is deleted on the server it will not be deleted
@@ -37,11 +30,11 @@ function getPage(Component) {
         // The state from the server is always fresh.
         // However, whenever the client-side component is mounted, the data
         // must be refreshed.
-        this['__INITIAL_STATE__'] = cloneDeep(initialState);
+        globalThis['__INITIAL_STATE__'] = cloneDeep(state);
         // return initial state for csr
-        return initialState;
+        return state;
       })
-      .then((initialState) => {
+      .then((state) => {
         let html = readFileSync(join(process.cwd(), 'public', 'index.html'), {
           encoding: 'utf8',
         });
@@ -53,8 +46,8 @@ function getPage(Component) {
 
         html = html.replace(
           '<script id="__INITIAL_STATE__"></script>',
-          `<script>window.__INITIAL_STATE__=${JSON.stringify(
-            initialState
+          `<script>globalThis['__INITIAL_STATE__']=${JSON.stringify(
+            state
           )}</script>`
         );
 

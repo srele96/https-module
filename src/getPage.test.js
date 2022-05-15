@@ -11,7 +11,7 @@ readFileSync.mockReturnValue(
 function getPageWithState(state) {
   return (
     '<div id="root"><h1>The component</h1></div>' +
-    `<script>window.__INITIAL_STATE__=${JSON.stringify(state)}</script>`
+    `<script>globalThis['__INITIAL_STATE__']=${JSON.stringify(state)}</script>`
   );
 }
 
@@ -40,7 +40,7 @@ it(
     'and csr when the state is empty object',
   () => {
     return getPage(Component).then((html) => {
-      expect(__INITIAL_STATE__).toEqual({});
+      expect(globalThis['__INITIAL_STATE__']).toEqual({});
       expect(html).toEqual(getPageWithState({}));
     });
   }
@@ -67,7 +67,7 @@ it('sets the correct initial state for ssr and csr', () => {
 
   return getPage(Component).then((html) => {
     // ssr state should be set on the global object
-    expect(__INITIAL_STATE__).toEqual(state);
+    expect(globalThis['__INITIAL_STATE__']).toEqual(state);
     expect(html).toEqual(getPageWithState(state));
   });
 });
